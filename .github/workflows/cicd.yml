@@ -16,7 +16,7 @@ on:
 jobs:
   compile:
     if: ${{ github.event.inputs.stage == 'compile' || github.event.inputs.stage == 'all' }}
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -30,7 +30,7 @@ jobs:
       
   test:
     if: ${{ github.event.inputs.stage == 'test' || github.event.inputs.stage == 'all' }}
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: compile
     steps:
       - uses: actions/checkout@v4
