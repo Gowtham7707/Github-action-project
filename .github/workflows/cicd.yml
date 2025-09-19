@@ -1,21 +1,15 @@
 name: Java CI with Maven
 
 on:
-  workflow_dispatch:
-    inputs:
-      stage:
-        description: "Choose stage to run"
-        required: true
-        default: "all"
-        type: choice
-        options:
-          - compile
-          - test
-          - all
+  push:
+    branches:
+         - master
+         - main
+         - dev
 
 jobs:
   compile:
-    if: ${{ github.event.inputs.stage == 'compile' || github.event.inputs.stage == 'all' }}
+    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +23,7 @@ jobs:
         run: mvn clean compile
       
   test:
-    if: ${{ github.event.inputs.stage == 'test' || github.event.inputs.stage == 'all' }}
+    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     needs: compile
     steps:
