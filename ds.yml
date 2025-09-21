@@ -76,7 +76,7 @@ metadata:
   name: bankapp-service
   namespace: argocd
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
   - port: 80
     targetPort: 8080
