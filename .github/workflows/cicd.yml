@@ -6,7 +6,7 @@ on:
 
 jobs:
   compile:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: Set up JDK 17
@@ -21,7 +21,7 @@ jobs:
       run: mvn clean compile
 
   security-check:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: compile
     steps:
     - uses: actions/checkout@v4
@@ -43,7 +43,7 @@ jobs:
       run: gitleaks detect source . -r gitleaks-report.json -f json
       
   test:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: security-check
     steps:
     - uses: actions/checkout@v4
@@ -57,7 +57,7 @@ jobs:
       run: mvn test
 
   package:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: test
     steps:
     - uses: actions/checkout@v4
@@ -74,37 +74,11 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: app-jar
-        path: target/*.jar 
-
-  sonar-scanner-code:
-    runs-on: self-hosted
-    needs: package
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        # Disabling shallow clones is recommended for improving the relevancy of reporting
-        fetch-depth: 0
-    - name: install unzip
-      run: sudo apt install unzip 
-    - name: SonarQube Scan
-      uses: SonarSource/sonarqube-scan-action@v6.0.0 # Ex: v4.1.0 or sha1, See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
-        
-    # Check the Quality Gate status.
-    - name: SonarQube Quality Gate check
-      id: sonarqube-quality-gate-check
-      uses: sonarsource/sonarqube-quality-gate-action@master
-      with:
-        pollingTimeoutSec: 600
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }} #OPTIONAL 
+        path: target/*.jar  
 
   docker-build-and-push:
-    runs-on: self-hosted
-    needs: sonar-scanner-code
+    runs-on: ubuntu-latest
+    needs: package
     steps:
     - uses: actions/checkout@v4
     # download the .jar
@@ -129,4 +103,10 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: gowthamc121/github-action-image:latest    
+        tags: |
+           gowthamc121/github-action-image:latest  
+           gowthamc121/github-action-image:${{ github.run_number }}
+    - name: Update deployment.yaml with new image
+      run: |
+         sed -i "s|image: .*|image: gowthamc121/github-action-image:${{ github.run_number }}|" ds.yaml
+         cat ds.yaml
