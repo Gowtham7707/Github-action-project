@@ -108,5 +108,5 @@ jobs:
            gowthamc121/github-action-image:${{ github.run_number }}
     - name: Update deployment.yaml with new image
       run: |
-         sed -i "s|image: .*|image: gowthamc121/github-action-image:${{ github.run_number }}|" ds.yaml
+         sed -i "s|image: .*|image: gowthamc121/github-action-image:${{ github.run_number }}|g" ds.yaml
          cat ds.yaml
