@@ -107,5 +107,12 @@ jobs:
            gowthamc121/github-action-image:${{ github.run_number }}
     - name: Update deployment.yaml with new image
       run: |
-         sed -i "s|image: .*|image: gowthamc121/github-action-image:${{ github.run_number }}|g" ds.yml
-         cat ds.yml
+         sed -i "s|image: .*|image: gowthamc121/github-action-image:${{ github.run_number }}|g" bankapp.yml
+         cat bankapp.yml
+         git config user.name "github-actions[bot]"
+         git config user.email "github-actions[bot]@users.noreply.github.com"
+
+         # Commit and push changes
+         git add bankapp.yml
+         git commit -m "Update image tag to run number ${{ github.run_number }}"
+         git push origin HEAD:${{ github.ref_name }}
