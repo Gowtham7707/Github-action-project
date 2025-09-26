@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: bankapp
-        image: adijaiswal/bankapp:latest
+        image: gowthamc121/github-action-image:26
         ports:
         - containerPort: 8080
         env:
