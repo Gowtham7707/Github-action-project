@@ -3,6 +3,10 @@ name: Java CI with Maven
 on:
   workflow_dispatch
 
+permissions:
+  contents: write
+  
+
 jobs:
   compile:
     runs-on: ubuntu-latest
@@ -115,4 +119,5 @@ jobs:
          # Commit and push changes
          git add bankapp.yml
          git commit -m "Update image tag to run number ${{ github.run_number }}"
-         git push origin HEAD:${{ github.ref_name }}
+         git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:${{ github.ref_name }}
+
